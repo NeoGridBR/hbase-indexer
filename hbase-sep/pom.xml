@@ -23,7 +23,7 @@
   <parent>
     <groupId>com.ngdata</groupId>
     <artifactId>hbase-indexer</artifactId>
-    <version>1.3</version>
+    <version>1.3-NG-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
