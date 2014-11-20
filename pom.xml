@@ -413,6 +413,18 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${version.hadoop}</version>
+            <!-- Exclude Avro in favor of a new version of Avro -->
+            <exclusions>
+              <exclusion>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.7.5</version>
           </dependency>
           <dependency>
             <groupId>org.apache.hadoop</groupId>
