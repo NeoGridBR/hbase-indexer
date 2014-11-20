@@ -43,6 +43,8 @@ import org.apache.solr.hadoop.ForkedToolRunnerHelpFormatter;
 import org.apache.solr.hadoop.PathArgumentType;
 import org.apache.solr.hadoop.dedup.RetainMostRecentUpdateConflictResolver;
 
+import net.sourceforge.argparse4j.impl.choice.CollectionArgumentChoice;
+
 /**
  * See http://argparse4j.sourceforge.net and for details see
  * http://argparse4j.sourceforge.net/usage.html
@@ -130,6 +132,13 @@ class HBaseIndexerArgumentParser {
                 .help("Optional name of the HBase table containing the records to be indexed. If "
                     + "supplied, this overrides the value from the --hbase-indexer-* options. "
                     + "Example: myTable");
+
+        Argument documentTypeArg = scanArgumentGroup.addArgument("--document-type")
+                .metavar("INTEGER")
+                .type(Integer.class)
+                .choices(new CollectionArgumentChoice<Integer>(5, 143))
+                .help("String representation of the document type code. "
+                    + "This code will used to filter the rows that must go through the ETL. Example: 5");
 
         Argument startRowArg = scanArgumentGroup.addArgument("--hbase-start-row")
                 .metavar("BINARYSTRING")
@@ -494,6 +503,7 @@ class HBaseIndexerArgumentParser {
         opts.hbaseIndexerZkHost = ns.getString(indexerZkHostArg.getDest());
         opts.hbaseIndexerName = ns.getString(indexNameArg.getDest());
         opts.hbaseTableName = ns.getString(hbaseTableNameArg.getDest());
+        opts.documentType = ns.getInt(documentTypeArg.getDest());
         opts.hbaseStartRow = ns.getString(startRowArg.getDest());
         opts.hbaseEndRow = ns.getString(endRowArg.getDest());
         opts.hbaseStartTimeString = ns.getString(startTimeArg.getDest());

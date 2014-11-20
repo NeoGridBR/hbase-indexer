@@ -29,6 +29,9 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.solr.hadoop.ForkedMapReduceIndexerTool.OptionsBridge;
@@ -77,6 +80,7 @@ class HBaseIndexingOptions extends OptionsBridge {
     public String hbaseIndexerName = DEFAULT_INDEXER_NAME;
     public File hbaseIndexerConfigFile;
     public String hbaseTableName;
+    public Integer documentType;
     public String hbaseStartRow;
     public String hbaseEndRow;
     public String hbaseStartTimeString;
@@ -171,6 +175,21 @@ class HBaseIndexingOptions extends OptionsBridge {
         hbaseScan.setCacheBlocks(false);
         hbaseScan.setCaching(conf.getInt("hbase.client.scanner.caching", 200));
 
+        if (documentType != null) {
+            byte[] family = Bytes.toBytes("C");
+            byte[] qualifier = Bytes.toBytes("C:B");
+            byte[] value = null;
+            if (documentType == 5) {
+                value = new byte[] {0x02, 0x0A};
+            } else if (documentType == 143) {
+                value = new byte[] {0x02, (byte) 0x9E, 0x02};
+            } else {
+                value = Bytes.toBytes(documentType);
+            }
+            Filter filter = new SingleColumnValueFilter(family, qualifier, CompareOp.EQUAL, value);
+            hbaseScan.setFilter(filter);
+        }
+        
         if (hbaseStartRow != null) {
             hbaseScan.setStartRow(Bytes.toBytesBinary(hbaseStartRow));
             LOG.debug("Starting row scan at " + hbaseStartRow);
