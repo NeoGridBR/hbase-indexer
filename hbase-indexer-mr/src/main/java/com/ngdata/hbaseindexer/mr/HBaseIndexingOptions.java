@@ -90,6 +90,13 @@ class HBaseIndexingOptions extends OptionsBridge {
 
     public HBaseIndexingOptions(Configuration conf) {
         Preconditions.checkNotNull(conf);
+        conf.set("mapreduce.map.output.compress", "true");
+        conf.set("mapreduce.map.output.compress.codec", "org.apache.hadoop.io.compress.SnappyCodec");
+        conf.set("mapreduce.reduce.merge.inmem.threshold", "0");
+        conf.set("mapreduce.task.io.sort.factor", "20");
+        conf.set("hbase.regionserver.lease.period", "50000");
+        conf.set("hbase.client.operation.timeout", "60000");
+        conf.set("hbase.rpc.timeout", "60000");
         this.conf = conf;
     }
 
@@ -173,7 +180,7 @@ class HBaseIndexingOptions extends OptionsBridge {
     void evaluateScan() {
         this.hbaseScan = new Scan();
         hbaseScan.setCacheBlocks(false);
-        hbaseScan.setCaching(conf.getInt("hbase.client.scanner.caching", 200));
+        hbaseScan.setCaching(conf.getInt("hbase.client.scanner.caching", 1000));
 
         if (documentType != null) {
             byte[] family = Bytes.toBytes("C");
